@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="BoardScene" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/source/config.brs" />
+    <script type="text/brightscript" uri="pkg:/components/BoardScene.brs" />
+    <children>
+        <Rectangle width="1920" height="1080" color="0x0C1923FF" />
+        <Rectangle translation="[40,40]" width="1840" height="105" color="0x123341FF" />
+        <Label id="title" translation="[70,60]" width="900" height="60" text="TECHTOP  |  ITINERARIOS" color="0xFFFFFFFF" />
+        <Label id="updated" translation="[1120,75]" width="730" height="45" horizAlign="right" color="0xB8CCD2FF" />
+        <Rectangle translation="[40,164]" width="1150" height="822" color="0x142B38FF" />
+        <Rectangle translation="[1208,164]" width="672" height="822" color="0x142B38FF" />
+        <Label id="importsTitle" translation="[65,182]" width="1090" height="58" text="IMPORTACIONES · LLEGADA A PLANTA" color="0x5AD5C9FF" />
+        <Label id="exportsTitle" translation="[1232,182]" width="625" height="58" text="EXPORTACIONES · SALIDA DE PLANTA" color="0xFFA65DFF" />
+        <Group id="rows" />
+        <Label id="notice" translation="[55,1002]" width="1800" height="45" color="0xF9D98AFF" />
+        <Timer id="refreshTimer" repeat="true" duration="30" />
+        <Timer id="pageTimer" repeat="true" duration="16" />
+    </children>
+</component>

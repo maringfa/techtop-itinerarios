@@ -1,0 +1,9 @@
+{
+  "demo": true,
+  "bind": "127.0.0.1",
+  "port": 8765,
+  "refreshSeconds": 60,
+  "dateOrder": "MDY",
+  "imports": { "path": "samples/importaciones_ficticias.xlsx", "sheet": "Importaciones", "headerRow": 1 },
+  "exports": { "path": "samples/exportaciones_ficticias.xlsx", "sheet": "Exportaciones", "headerRow": 1 }
+}
