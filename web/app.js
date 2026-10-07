@@ -5,6 +5,7 @@
   const dayFmt = new Intl.DateTimeFormat("es-CR", {timeZone:"UTC",weekday:"long",day:"numeric",month:"short"});
   const shortFmt = new Intl.DateTimeFormat("es-CR", {timeZone:"UTC",day:"numeric",month:"short"});
   const stampFmt = new Intl.DateTimeFormat("es-CR", {timeZone:zone,day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false});
+  const calendarFmt = new Intl.DateTimeFormat("en", {timeZone:zone,year:"numeric",month:"2-digit",day:"2-digit"});
   let board = null, page = 0, error = null, lastSuccessfulRead = null;
   const strip = s => s.replace(/\./g, "");
   const date = iso => new Date(iso + "T12:00:00Z");
@@ -53,33 +54,33 @@
     alert.hidden = !error;
     if (error) alert.textContent = board ? "La lectura más reciente falló. Se muestran los últimos datos válidos." : "Esperando lectura de los itinerarios.";
     if (!board) return;
+    const calendar = Object.fromEntries(calendarFmt.formatToParts(new Date()).map(x => [x.type, x.value]));
+    board.today = calendar.year + "-" + calendar.month + "-" + calendar.day;
+    const upcomingImports = board.imports.filter(x => x.plant >= board.today);
+    const upcomingExports = board.exports.filter(x => x.departure >= board.today);
     $("headerDate").textContent = strip(dayFmt.format(date(board.today)));
     $("modeBadge").textContent = board.demo ? "PILOTO · DATOS FICTICIOS" : "ITINERARIO INTERNO";
     $("lastUpdated").textContent = "Última actualización: " + (lastSuccessfulRead ? strip(stampFmt.format(new Date(lastSuccessfulRead))) : "pendiente");
-    const imports = pagesByDate(board.imports, "plant", 10);
-    const exports = pagesByDate(board.exports, "departure", 5);
+    const imports = pagesByDate(upcomingImports, "plant", 10);
+    const exports = pagesByDate(upcomingExports, "departure", 5);
     const inPage = imports[page % imports.length], outPage = exports[page % exports.length];
     $("screen").className = inPage.length >= 6 ? "screen high-volume" : "screen";
     $("importRows").replaceChildren(); $("exportRows").replaceChildren();
     inPage.forEach(x => {
-      const card = row(x.plant, (inPage.length >= 6 ? "" : "Contenedor ") + x.container, x.items + " · " + x.hbl, "");
+      const card = row(x.plant, (inPage.length >= 6 ? "" : "Contenedor ") + x.container,
+        "HBL " + (x.hbl || "pendiente"), x.items);
       card.setAttribute("aria-label", "Contenedor " + x.container + ", " + x.items + ", " + x.hbl);
       $("importRows").append(card);
     });
     outPage.forEach(x => {
       const container = /^[A-Z]{4}[0-9]{7}$/.test(x.container.trim()) ? "Contenedor " + x.container : (x.container || "Contenedor pendiente");
       $("exportRows").append(row(x.departure, "Transfer " + x.transfer,
-        "Destino " + x.origin + " · " + (x.reservation || "HBL pendiente"), container));
+        "Destino " + x.origin + " · HBL " + (x.reservation || "pendiente"), container));
     });
-    if (!board.imports.length) $("importRows").append(node("div", "empty", "Sin llegadas a planta programadas"));
-    if (!board.exports.length) $("exportRows").append(node("div", "empty", "Sin salidas con fecha y Transfer"));
-    $("importCount").textContent = board.imports.length + (board.imports.length === 1 ? " próxima" : " próximas") + (imports.length > 1 ? " · página " + (page % imports.length + 1) + "/" + imports.length : "");
-    $("exportCount").textContent = board.exports.length + (board.exports.length === 1 ? " próxima" : " próximas") + (exports.length > 1 ? " · página " + (page % exports.length + 1) + "/" + exports.length : "");
-    const notice = $("portNotice"); notice.replaceChildren();
-    notice.className = "notice" + (board.port.watchCount ? "" : " quiet");
-    notice.append(node("strong", "", board.port.eta ? "ETA AL PUERTO · " + short(board.port.eta) : "SEGUIMIENTO DE PUERTO"),
-      node("span", "", board.port.eta ? "Rastrear y preparar DUA · " + board.port.unscheduledCount + " contenedores sin fecha de planta"
-        : (board.port.unscheduledCount ? board.port.unscheduledCount + " contenedores sin fecha de planta" : "No hay contenedores pendientes de programar")));
+    if (!upcomingImports.length) $("importRows").append(node("div", "empty", "Sin llegadas a planta programadas"));
+    if (!upcomingExports.length) $("exportRows").append(node("div", "empty", "Sin salidas con fecha y Transfer"));
+    $("importCount").textContent = upcomingImports.length + (upcomingImports.length === 1 ? " próxima" : " próximas") + (imports.length > 1 ? " · página " + (page % imports.length + 1) + "/" + imports.length : "");
+    $("exportCount").textContent = upcomingExports.length + (upcomingExports.length === 1 ? " próxima" : " próximas") + (exports.length > 1 ? " · página " + (page % exports.length + 1) + "/" + exports.length : "");
   }
   async function refresh() {
     try {

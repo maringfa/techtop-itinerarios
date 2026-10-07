@@ -41,7 +41,6 @@ sub onResponse()
             m.lastRead = data.lastSuccessfulReadLocal
             if m.lastRead = invalid then m.lastRead = data.lastSuccessfulRead
             m.stale = data.error <> invalid and data.error <> ""
-            m.page = 0
             drawBoard()
             return
         end if
@@ -86,7 +85,7 @@ function addLabel(parent as Object, x as Integer, y as Integer, w as Integer, h 
     parent.AppendChild(label)
 end function
 
-sub addCard(x as Integer, y as Integer, w as Integer, h as Integer, heading as String, details as String, accent as String)
+sub addCard(x as Integer, y as Integer, w as Integer, h as Integer, heading as String, details as Object, accent as String)
     card = CreateObject("roSGNode", "Rectangle")
     card.translation = [x, y]
     card.width = w
@@ -100,8 +99,26 @@ sub addCard(x as Integer, y as Integer, w as Integer, h as Integer, heading as S
     stripe.color = accent
     card.AppendChild(stripe)
     addLabel(card, 20, 3, w - 35, 34, heading, 27, "0xFFFFFFFF")
-    addLabel(card, 20, 36, w - 35, h - 37, details, 21, "0xB8CCD2FF")
+    for i = 0 to details.Count() - 1
+        addLabel(card, 20, 36 + i * 27, w - 35, 26, details[i], 21, "0xB8CCD2FF")
+    end for
 end sub
+
+function currentPlantDay() as String
+    clock = CreateObject("roDateTime")
+    ' Costa Rica usa UTC-6; no depende de la zona configurada en el televisor.
+    clock.FromSeconds(clock.AsSeconds() - 21600)
+    return Left(clock.ToISOString(), 10)
+end function
+
+function upcoming(items as Object, dateKey as String, today as String) as Object
+    result = []
+    for each item in items
+        day = safeText(item[dateKey])
+        if day <> "" and day >= today then result.Push(item)
+    end for
+    return result
+end function
 
 function pageCount(items as Object, size as Integer) as Integer
     if items.Count() = 0 then return 1
@@ -118,8 +135,9 @@ sub drawBoard()
     while m.rows.GetChildCount() > 0
         m.rows.RemoveChild(m.rows.GetChild(0))
     end while
-    imports = m.board.imports
-    exports = m.board.exports
+    today = currentPlantDay()
+    imports = upcoming(m.board.imports, "plant", today)
+    exports = upcoming(m.board.exports, "departure", today)
     inPages = pageCount(imports, 10)
     outPages = pageCount(exports, 5)
     inPage = m.page mod inPages
@@ -128,18 +146,18 @@ sub drawBoard()
     m.top.FindNode("exportsTitle").text = "EXPORTACIONES · " + exports.Count().ToStr() + " PRÓXIMAS · " + (outPage + 1).ToStr() + "/" + outPages.ToStr()
     for i = inPage * 10 to lastIndex(imports.Count(), inPage * 10 + 9)
         item = imports[i]
-        heading = safeText(item.plant) + "   ·   " + safeText(item.container)
-        details = safeText(item.items) + "   ·   HBL " + safeText(item.hbl)
+        heading = "ATP " + safeText(item.plant) + "   ·   " + safeText(item.container)
+        details = ["HBL " + safeText(item.hbl) + "   ·   " + safeText(item.items)]
         addCard(60, 247 + (i mod 10) * 72, 1110, 65, heading, details, "0x5AD5C9FF")
     end for
     for i = outPage * 5 to lastIndex(exports.Count(), outPage * 5 + 4)
         item = exports[i]
         heading = safeText(item.departure) + "   ·   TRANSFER " + safeText(item.transfer)
         container = safeText(item.container)
-        if container = "" then container = "Contenedor pendiente"
+        if container = "" then container = "pendiente"
         reservation = safeText(item.reservation)
-        if reservation = "" then reservation = "HBL pendiente"
-        details = safeText(item.origin) + "   ·   " + container + "   ·   " + reservation
+        if reservation = "" then reservation = "pendiente"
+        details = ["Destino: " + safeText(item.origin), "Container: " + container, "HBL: " + reservation]
         addCard(1225, 250 + (i mod 5) * 141, 638, 126, heading, details, "0xFFA65DFF")
     end for
     if imports.Count() = 0 then addLabel(m.rows, 65, 280, 1000, 55, "Sin llegadas a planta programadas", 28, "0xB8CCD2FF")
@@ -152,11 +170,6 @@ sub drawBoard()
     else if m.board.demo = true then
         m.notice.text = "PILOTO · DATOS FICTICIOS · Configurar servidor para los datos reales"
     else
-        port = m.board.port
-        if type(port) = "roAssociativeArray" and safeText(port.eta) <> "" then
-            m.notice.text = "ETA AL PUERTO " + safeText(port.eta) + " · Rastrear y preparar DUA"
-        else
-            m.notice.text = "Agenda vigente · Actualización automática cada 30 segundos"
-        end if
+        m.notice.text = ""
     end if
 end sub

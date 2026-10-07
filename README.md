@@ -30,9 +30,11 @@ $env:TECHTOP_BOARD_CONFIG = "C:\ruta-interna\config.local.json"
 .\.venv\Scripts\python.exe app.py
 ```
 
-**Importaciones:** cada fila con `Container` se interpreta como un contenedor. Se leen `Items`, `Status`, `HBL`, `ETA` y una nueva columna por contenedor llamada `ATP` (llegada a planta) (también acepta los encabezados anteriores `Llegada a planta`, `Llegada programada a planta` o `Arribo a planta`). El lector resuelve `Status`, `HBL` y `ETA` si están combinados entre varios contenedores. `Arrived` se excluye de llegadas próximas; `ETA` se usa como aviso portuario desde dos días antes. Sin columna de planta, la lectura informa el cambio pendiente.
+**Importaciones:** cada fila con `Container` se interpreta como un contenedor. Se leen `Items`, `Status`, `HBL`, `ETA` y una nueva columna por contenedor llamada `ATP` (llegada a planta) (también acepta los encabezados anteriores `Llegada a planta`, `Llegada programada a planta` o `Arribo a planta`). El lector resuelve `Status`, `HBL` y `ETA` si están combinados entre varios contenedores. Las tarjetas muestran `HBL`, `Container`, `Items` y la fecha `ATP`. Solo aparecen llegadas con ATP desde hoy; `Arrived` se excluye. ETA no sustituye ATP y no se muestra un panel portuario en la pantalla. Sin columna de planta, la lectura informa el cambio pendiente.
 
-**Exportaciones:** se leen `Origin`, `Reservation`, `Container`, `Transfer` y `Deliver at TTICR`. Una salida aparece cuando tiene fecha y Transfer; Reservation y Container pueden quedar pendientes. Se muestran salidas desde el día actual.
+**Exportaciones:** se leen `Origin`, `Reservation`, `Container`, `Transfer` y `Deliver at TTICR`. Las tarjetas muestran Reservation como HBL, Container, Origin como destino, Transfer y la fecha de salida de planta. Una salida aparece cuando tiene fecha y Transfer; Reservation y Container pueden quedar pendientes. No se muestra contenido de la carga.
+
+Ambas listas incluyen el día actual y fechas futuras, ordenadas de la más cercana a la más lejana según el calendario de Costa Rica. Las pantallas web y Roku también descartan fechas pasadas cuando cambia el día, incluso si una lectura fallida obliga a conservar datos anteriores. Se conserva la fecha y hora de la última lectura exitosa.
 
 La lectura se repite cada `refreshSeconds` (60 por defecto). Si falla un archivo, mantiene **ambos conjuntos de la última lectura válida** y muestra una advertencia. `/health` devuelve estado de lectura sin datos del itinerario; `/api/board` sí devuelve HBL, contenedores y Transfer a los navegadores autorizados.
 

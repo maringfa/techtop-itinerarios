@@ -13,6 +13,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ItineraryTests(unittest.TestCase):
+    def test_upcoming_movements_exclude_past_and_arrived_and_sort_by_date(self):
+        now = datetime(2026, 10, 7, 12, tzinfo=ZoneInfo("America/Costa_Rica"))
+        today = now.date()
+        def imp(days, status="In transit"):
+            return {"plant": today + timedelta(days=days), "status": status,
+                    "container": str(days), "hbl": "example", "items": "Plywood", "eta": today}
+        def exp(days, transfer="example"):
+            return {"departure": today + timedelta(days=days), "transfer": transfer,
+                    "origin": "Atlanta", "container": "example", "reservation": "example"}
+        board = build_board([imp(2), imp(-1), imp(1, "Arrived"), imp(0)],
+                            [exp(2), exp(-1), exp(0), exp(1, "")], now=now)
+        dates = [today.isoformat(), (today + timedelta(days=2)).isoformat()]
+        self.assertEqual([x["plant"] for x in board["imports"]], dates)
+        self.assertEqual([x["departure"] for x in board["exports"]], dates)
+
     def test_merged_shared_dates_and_individual_arrivals(self):
         rows = read_xlsx(ROOT / "samples/importaciones_ficticias.xlsx", "import", "Importaciones", 1)
         self.assertEqual(rows[1]["hbl"], rows[6]["hbl"])

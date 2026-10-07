@@ -10,7 +10,8 @@ def build_board(imports, exports, demo=False, now=None):
     now = now or datetime.now(CR)
     today = now.date()
     arrivals = sorted(
-        (x for x in imports if x["plant"] and x["status"].strip().casefold() != "arrived"),
+        (x for x in imports if x["plant"] and x["plant"] >= today
+         and x["status"].strip().casefold() != "arrived"),
         key=lambda x: (x["plant"], x["container"]),
     )
     departures = sorted(
