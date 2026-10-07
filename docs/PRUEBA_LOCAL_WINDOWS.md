@@ -88,13 +88,15 @@ Reemplazar el contenido por esta estructura y completar las rutas y pestañas re
   },
   "exports": {
     "path": "C:/RUTA_REAL/Exportaciones.xlsx",
-    "sheet": "NOMBRE_REAL_DE_LA_PESTANA_EXPORT",
+    "sheet": "*",
     "headerRow": null
   }
 }
 ```
 
-Usar el nombre exacto de la pestaña interna del Excel, no el nombre del archivo. `headerRow: null` detecta encabezados dentro de las primeras 40 filas; si están más abajo, colocar el número de fila.
+En importaciones, usar el nombre exacto de la pestaña interna del Excel, no el nombre del archivo. En exportaciones, `"sheet": "*"` lee todas las pestañas mensuales que tengan los encabezados del itinerario, sin cambiar la configuración cada mes. También incluye meses futuros y pestañas nuevas en la siguiente lectura. El filtro usa la fecha real de Deliver at TTICR: solo hoy y futuras, ordenadas por proximidad; el nombre del mes no determina qué aparece. Si importaciones también se divide por meses, se puede usar `*` allí.
+
+`headerRow: null` detecta encabezados dentro de las primeras 40 filas de cada pestaña; si están más abajo, colocar el número de fila. Las portadas o resúmenes sin estructura de itinerario se omiten. Una hoja reconocible con encabezados incompletos provoca un error de lectura para poder corregirla. Si una hoja de resumen repite los mismos registros y encabezados, se leerá también; este modo no elimina duplicados automáticamente.
 
 Para obtener cada ruta, usar **Copiar como ruta** en el Explorador. Quitar las comillas externas de la ruta copiada, cambiar `\` por `/` y pegarla dentro de las comillas JSON de `path`. Conservar las comillas y comas de la estructura.
 

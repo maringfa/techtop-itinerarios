@@ -1,8 +1,8 @@
 title=TechTop Itinerarios
 subtitle=Importaciones y exportaciones
 major_version=0
-minor_version=5
-build_version=1
+minor_version=6
+build_version=0
 ui_resolutions=hd,fhd
 supports_input_launch=0
 mm_icon_focus_fhd=pkg:/images/icon_fhd.png

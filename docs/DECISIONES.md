@@ -12,6 +12,8 @@ La lectura real depende de validar encabezados, nombres de hojas, rangos combina
 
 ### Reglas de datos aprobadas
 
+El archivo de exportaciones puede tener una pestaña por mes. `sheet: "*"` lee todas las pestañas con estructura del itinerario, sin depender de sus nombres ni de cambiar de pestaña cada mes. Incluye las ocultas y descubre pestañas nuevas al releer el archivo. Combina filas y filtra por fechas reales de salida, para conservar todos los movimientos de hoy y futuros, incluidos próximos meses/años. Las hojas sin estructura de itinerario se omiten; las reconocibles pero incompletas generan error. No elimina registros repetidos entre pestañas automáticamente. La selección por nombre exacto sigue disponible y `null` conserva la selección anterior de primera hoja visible.
+
 | Fuente | Regla de lectura | Regla para la pantalla |
 | --- | --- | --- |
 | Importaciones | `ETA`, `HBL` y otras celdas compartidas se heredan cuando hay celdas combinadas. `ATP` (llegada a planta) pertenece a cada contenedor. | Mostrar HBL, Container e Items. Usar ATP si existe y rotular «ATP · Llegada a planta»; si está vacío, usar ETA y rotular «ETA · Arribo estimado al puerto». Excluir `Arrived`. La fecha elegida debe ser hoy o futura; no hay cuadro portuario separado. |
