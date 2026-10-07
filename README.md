@@ -30,7 +30,7 @@ $env:TECHTOP_BOARD_CONFIG = "C:\ruta-interna\config.local.json"
 .\.venv\Scripts\python.exe app.py
 ```
 
-**Importaciones:** cada fila con `Container` se interpreta como un contenedor. Se leen `Items`, `Status`, `HBL`, `ETA` y una nueva columna por contenedor llamada `Llegada a planta` (también acepta `Llegada programada a planta` o `Arribo a planta`). El lector resuelve `Status`, `HBL` y `ETA` si están combinados entre varios contenedores. `Arrived` se excluye de llegadas próximas; `ETA` se usa como aviso portuario desde dos días antes. Sin columna de planta, la lectura informa el cambio pendiente.
+**Importaciones:** cada fila con `Container` se interpreta como un contenedor. Se leen `Items`, `Status`, `HBL`, `ETA` y una nueva columna por contenedor llamada `ATP` (llegada a planta) (también acepta los encabezados anteriores `Llegada a planta`, `Llegada programada a planta` o `Arribo a planta`). El lector resuelve `Status`, `HBL` y `ETA` si están combinados entre varios contenedores. `Arrived` se excluye de llegadas próximas; `ETA` se usa como aviso portuario desde dos días antes. Sin columna de planta, la lectura informa el cambio pendiente.
 
 **Exportaciones:** se leen `Origin`, `Reservation`, `Container`, `Transfer` y `Deliver at TTICR`. Una salida aparece cuando tiene fecha y Transfer; Reservation y Container pueden quedar pendientes. Se muestran salidas desde el día actual.
 

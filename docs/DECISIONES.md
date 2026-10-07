@@ -14,7 +14,7 @@ La lectura real depende de validar encabezados, nombres de hojas, rangos combina
 
 | Fuente | Regla de lectura | Regla para la pantalla |
 | --- | --- | --- |
-| Importaciones | `ETA`, `HBL` y otras celdas compartidas se heredan cuando hay celdas combinadas. `Llegada a planta` pertenece a cada contenedor. | Mostrar contenedor, HBL, contenido y fecha individual de planta. `Arrived` significa llegada a planta. ETA activa seguimiento portuario desde dos días antes; nunca sustituye la llegada a planta. |
+| Importaciones | `ETA`, `HBL` y otras celdas compartidas se heredan cuando hay celdas combinadas. `ATP` (llegada a planta) pertenece a cada contenedor. | Mostrar contenedor, HBL, contenido y fecha individual de planta. `Arrived` significa llegada a planta. ETA activa seguimiento portuario desde dos días antes; nunca sustituye la llegada a planta. |
 | Exportaciones | Leer `Origin`, `Reservation`, `Container`, `Transfer` y `Deliver at TTICR`. | Mostrar solo filas con fecha de salida y Transfer. HBL y contenedor se muestran pendientes si aún no están asignados. |
 
 El navegador piloto presenta hasta diez importaciones y cinco exportaciones por página, pero genera tantas páginas como hagan falta; no hay límite de contenedores por fecha. Muestra fecha y hora de la última lectura exitosa y conserva la última lectura válida si la siguiente falla.

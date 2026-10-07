@@ -11,7 +11,7 @@ from openpyxl.utils.datetime import from_excel
 FIELDS = {
     "import": {"items": ("items",), "status": ("status",), "hbl": ("hbl",),
                "container": ("container",), "eta": ("eta",),
-               "plant": ("llegada a planta", "llegada programada a planta", "arribo a planta")},
+               "plant": ("atp", "llegada a planta", "llegada programada a planta", "arribo a planta")},
     "export": {"origin": ("origin",), "reservation": ("reservation",),
                "container": ("container",), "transfer": ("transfer",),
                "departure": ("deliver at tticr",)},
@@ -109,7 +109,7 @@ def read_xlsx(path, kind, sheet=None, header_row=None, date_order="MDY"):
         ws = worksheet(book, sheet)
         cols, row0 = headers(ws, kind, header_row)
         if kind == "import" and "plant" not in cols:
-            raise FormatError("Falta agregar la columna Llegada a planta al itinerario de importaciones")
+            raise FormatError("Falta agregar la columna ATP al itinerario de importaciones")
         merges = merged_lookup(ws, set(cols.values()))
         def val(row, field):
             col = cols[field]
@@ -125,7 +125,7 @@ def read_xlsx(path, kind, sheet=None, header_row=None, date_order="MDY"):
                     "container": container, "hbl": display(val(row, "hbl")),
                     "items": display(val(row, "items")), "status": display(val(row, "status")),
                     "eta": checked_date(val(row, "eta"), book.epoch, date_order, "ETA", row),
-                    "plant": checked_date(val(row, "plant"), book.epoch, date_order, "Llegada a planta", row),
+                    "plant": checked_date(val(row, "plant"), book.epoch, date_order, "ATP", row),
                 })
             else:
                 departure = checked_date(val(row, "departure"), book.epoch, date_order, "Deliver at TTICR", row)
