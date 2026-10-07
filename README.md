@@ -30,7 +30,9 @@ $env:TECHTOP_BOARD_CONFIG = "C:\ruta-interna\config.local.json"
 .\.venv\Scripts\python.exe app.py
 ```
 
-**Importaciones:** cada fila con `Container` se interpreta como un contenedor. Se leen `Items`, `Status`, `HBL`, `ETA` y una nueva columna por contenedor llamada `ATP` (llegada a planta) (también acepta los encabezados anteriores `Llegada a planta`, `Llegada programada a planta` o `Arribo a planta`). El lector resuelve `Status`, `HBL` y `ETA` si están combinados entre varios contenedores. Las tarjetas muestran `HBL`, `Container`, `Items` y la fecha `ATP`. Solo aparecen llegadas con ATP desde hoy; `Arrived` se excluye. ETA no sustituye ATP y no se muestra un panel portuario en la pantalla. Sin columna de planta, la lectura informa el cambio pendiente.
+**Importaciones:** cada fila con `Container` se interpreta como un contenedor. Se leen `Items`, `Status`, `HBL`, `ETA` y una nueva columna por contenedor llamada `ATP` (llegada a planta) (también acepta los encabezados anteriores `Llegada a planta`, `Llegada programada a planta` o `Arribo a planta`). El lector resuelve `Status`, `HBL` y `ETA` si están combinados entre varios contenedores. Las tarjetas muestran `HBL`, `Container`, `Items` y una sola fecha: si hay ATP, **«ATP · Llegada a planta»**; mientras ATP esté vacío, **«ETA · Arribo estimado al puerto»**. Al registrar ATP, ETA deja de mostrarse y la tarjeta se reordena por ATP. No se muestra un panel portuario separado. Sin columna de planta, la lectura informa el cambio pendiente.
+
+La fecha elegida (ATP o, en su ausencia, ETA) debe ser hoy o futura. Un ATP pasado excluye el contenedor aunque ETA sea futuro; no se vuelve a ETA cuando ya hay ATP. `Arrived` se excluye en ambos casos. Sin ATP ni ETA, el contenedor no aparece.
 
 **Exportaciones:** se leen `Origin`, `Reservation`, `Container`, `Transfer` y `Deliver at TTICR`. Las tarjetas muestran Reservation como HBL, Container, Origin como destino, Transfer y la fecha de salida de planta. Una salida aparece cuando tiene fecha y Transfer; Reservation y Container pueden quedar pendientes. No se muestra contenido de la carga.
 

@@ -1,18 +1,23 @@
 """Reglas de exhibición; no accede a los archivos de origen."""
-from datetime import date, datetime
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 
 CR = ZoneInfo("America/Costa_Rica")
 
 
+def import_date(record):
+    """ATP tiene prioridad; ETA solo se usa mientras ATP esté vacío."""
+    return record["plant"] or record["eta"]
+
+
 def build_board(imports, exports, demo=False, now=None):
     now = now or datetime.now(CR)
     today = now.date()
     arrivals = sorted(
-        (x for x in imports if x["plant"] and x["plant"] >= today
+        (x for x in imports if import_date(x) and import_date(x) >= today
          and x["status"].strip().casefold() != "arrived"),
-        key=lambda x: (x["plant"], x["container"]),
+        key=lambda x: (import_date(x), x["container"]),
     )
     departures = sorted(
         (x for x in exports if x["departure"] and x["departure"] >= today and x["transfer"].strip()),
@@ -26,7 +31,9 @@ def build_board(imports, exports, demo=False, now=None):
     )
     return {
         "demo": demo,
-        "imports": [{"plant": x["plant"].isoformat(), "container": x["container"],
+        "imports": [{"plant": x["plant"].isoformat() if x["plant"] else None,
+                     "displayDate": import_date(x).isoformat(),
+                     "dateType": "ATP" if x["plant"] else "ETA", "container": x["container"],
                      "hbl": x["hbl"], "items": x["items"]} for x in arrivals],
         "exports": [{"departure": x["departure"].isoformat(), "origin": x["origin"],
                      "reservation": x["reservation"], "container": x["container"],

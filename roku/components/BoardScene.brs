@@ -115,6 +115,7 @@ function upcoming(items as Object, dateKey as String, today as String) as Object
     result = []
     for each item in items
         day = safeText(item[dateKey])
+        if dateKey = "displayDate" and day = "" then day = safeText(item.plant)
         if day <> "" and day >= today then result.Push(item)
     end for
     return result
@@ -136,7 +137,7 @@ sub drawBoard()
         m.rows.RemoveChild(m.rows.GetChild(0))
     end while
     today = currentPlantDay()
-    imports = upcoming(m.board.imports, "plant", today)
+    imports = upcoming(m.board.imports, "displayDate", today)
     exports = upcoming(m.board.exports, "departure", today)
     inPages = pageCount(imports, 10)
     outPages = pageCount(exports, 5)
@@ -146,9 +147,17 @@ sub drawBoard()
     m.top.FindNode("exportsTitle").text = "EXPORTACIONES · " + exports.Count().ToStr() + " PRÓXIMAS · " + (outPage + 1).ToStr() + "/" + outPages.ToStr()
     for i = inPage * 10 to lastIndex(imports.Count(), inPage * 10 + 9)
         item = imports[i]
-        heading = "ATP " + safeText(item.plant) + "   ·   " + safeText(item.container)
+        day = safeText(item.displayDate)
+        if day = "" then day = safeText(item.plant)
+        dateLabel = "ATP " + day + " · Llegada a planta"
+        accent = "0x5AD5C9FF"
+        if safeText(item.dateType) = "ETA" then
+            dateLabel = "ETA " + day + " · Arribo estimado al puerto"
+            accent = "0xDDAE2CFF"
+        end if
+        heading = dateLabel + "   ·   " + safeText(item.container)
         details = ["HBL " + safeText(item.hbl) + "   ·   " + safeText(item.items)]
-        addCard(60, 247 + (i mod 10) * 72, 1110, 65, heading, details, "0x5AD5C9FF")
+        addCard(60, 247 + (i mod 10) * 72, 1110, 65, heading, details, accent)
     end for
     for i = outPage * 5 to lastIndex(exports.Count(), outPage * 5 + 4)
         item = exports[i]
@@ -160,7 +169,7 @@ sub drawBoard()
         details = ["Destino: " + safeText(item.origin), "Container: " + container, "HBL: " + reservation]
         addCard(1225, 250 + (i mod 5) * 141, 638, 126, heading, details, "0xFFA65DFF")
     end for
-    if imports.Count() = 0 then addLabel(m.rows, 65, 280, 1000, 55, "Sin llegadas a planta programadas", 28, "0xB8CCD2FF")
+    if imports.Count() = 0 then addLabel(m.rows, 65, 280, 1000, 55, "Sin importaciones próximas con ATP o ETA", 28, "0xB8CCD2FF")
     if exports.Count() = 0 then addLabel(m.rows, 1230, 280, 610, 55, "Sin salidas con fecha y Transfer", 25, "0xB8CCD2FF")
     stamp = safeText(m.lastRead)
     if stamp = "" then stamp = "pendiente"

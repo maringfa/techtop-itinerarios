@@ -6,6 +6,8 @@
 
 No se ha ejecutado en un televisor real ni compilado con herramientas Roku en este entorno. Aaron debe validar en el dispositivo y corregir cualquier diferencia de firmware o diseño observada.
 
+Cada importación muestra una sola fecha: «ETA · Arribo estimado al puerto» mientras no haya ATP, o «ATP · Llegada a planta» cuando ya se agendó la llegada. ATP tiene prioridad y sustituye ETA en la tarjeta y su orden. El servidor y el cliente descartan fechas elegidas anteriores a hoy en Costa Rica; el servidor también excluye contenedores con `Status = Arrived`.
+
 ## Instalar para ver la demostración en cada televisor
 
 1. Activar Developer Mode en cada Roku, siguiendo la [guía de Roku](https://developer.roku.com/dev/docs/developer-setup), y guardar la contraseña de desarrollo en el gestor corporativo. La IP mostrada en este paso es la **del televisor**.

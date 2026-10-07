@@ -23,11 +23,12 @@
     if (value !== undefined) x.textContent = String(value);
     return x;
   }
-  function row(iso, title, description, detail, isExport) {
+  function row(iso, title, description, detail, dateLabel) {
     const item = node("article", "row");
     const when = node("div", "datebox");
     when.append(node("strong", "relative", relative(iso)), node("span", "date", short(iso)));
     const body = node("div", "rowbody");
+    if (dateLabel) body.append(node("small", "milestone", dateLabel));
     body.append(node("strong", "", title), node("span", "", description));
     if (detail) body.append(node("small", "", detail));
     item.append(when, body);
@@ -56,20 +57,24 @@
     if (!board) return;
     const calendar = Object.fromEntries(calendarFmt.formatToParts(new Date()).map(x => [x.type, x.value]));
     board.today = calendar.year + "-" + calendar.month + "-" + calendar.day;
-    const upcomingImports = board.imports.filter(x => x.plant >= board.today);
+    const upcomingImports = board.imports.map(x => ({...x, displayDate: x.displayDate || x.plant}))
+      .filter(x => x.displayDate >= board.today);
     const upcomingExports = board.exports.filter(x => x.departure >= board.today);
     $("headerDate").textContent = strip(dayFmt.format(date(board.today)));
     $("modeBadge").textContent = board.demo ? "PILOTO · DATOS FICTICIOS" : "ITINERARIO INTERNO";
     $("lastUpdated").textContent = "Última actualización: " + (lastSuccessfulRead ? strip(stampFmt.format(new Date(lastSuccessfulRead))) : "pendiente");
-    const imports = pagesByDate(upcomingImports, "plant", 10);
+    const imports = pagesByDate(upcomingImports, "displayDate", 10);
     const exports = pagesByDate(upcomingExports, "departure", 5);
     const inPage = imports[page % imports.length], outPage = exports[page % exports.length];
     $("screen").className = inPage.length >= 6 ? "screen high-volume" : "screen";
     $("importRows").replaceChildren(); $("exportRows").replaceChildren();
     inPage.forEach(x => {
-      const card = row(x.plant, (inPage.length >= 6 ? "" : "Contenedor ") + x.container,
-        "HBL " + (x.hbl || "pendiente"), x.items);
-      card.setAttribute("aria-label", "Contenedor " + x.container + ", " + x.items + ", " + x.hbl);
+      const estimated = x.dateType === "ETA";
+      const dateLabel = estimated ? "ETA · Arribo estimado al puerto" : "ATP · Llegada a planta";
+      const card = row(x.displayDate, (inPage.length >= 6 ? "" : "Contenedor ") + x.container,
+        "HBL " + (x.hbl || "pendiente"), x.items, dateLabel);
+      if (estimated) card.classList.add("port-estimate");
+      card.setAttribute("aria-label", dateLabel + " " + x.displayDate + ", contenedor " + x.container + ", " + x.items + ", " + x.hbl);
       $("importRows").append(card);
     });
     outPage.forEach(x => {
@@ -77,7 +82,7 @@
       $("exportRows").append(row(x.departure, "Transfer " + x.transfer,
         "Destino " + x.origin + " · HBL " + (x.reservation || "pendiente"), container));
     });
-    if (!upcomingImports.length) $("importRows").append(node("div", "empty", "Sin llegadas a planta programadas"));
+    if (!upcomingImports.length) $("importRows").append(node("div", "empty", "Sin importaciones próximas con ATP o ETA"));
     if (!upcomingExports.length) $("exportRows").append(node("div", "empty", "Sin salidas con fecha y Transfer"));
     $("importCount").textContent = upcomingImports.length + (upcomingImports.length === 1 ? " próxima" : " próximas") + (imports.length > 1 ? " · página " + (page % imports.length + 1) + "/" + imports.length : "");
     $("exportCount").textContent = upcomingExports.length + (upcomingExports.length === 1 ? " próxima" : " próximas") + (exports.length > 1 ? " · página " + (page % exports.length + 1) + "/" + exports.length : "");

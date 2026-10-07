@@ -35,6 +35,9 @@
     .rowbody strong { font-size:clamp(18px,1.35vw,24px); line-height:1.15; font-weight:700; overflow-wrap:anywhere; }
     .rowbody span { font-size:clamp(14px,1vw,17px); color:var(--secondary); line-height:1.25; overflow-wrap:anywhere; }
     .rowbody small { color:var(--secondary); font-size:clamp(13px,.9vw,16px); line-height:1.2; overflow-wrap:anywhere; }
+    .rowbody .milestone { color:var(--teal); font-size:clamp(11px,.8vw,14px); font-weight:700; }
+    .row.port-estimate { border-left-color:var(--amber); }
+    .port-estimate .datebox .relative,.port-estimate .milestone { color:var(--amber); }
     .screen.high-volume .columns { padding-top:18px; padding-bottom:15px; }
     .screen.high-volume .section-head { margin-bottom:11px; }
     .screen.high-volume .import .rows { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }

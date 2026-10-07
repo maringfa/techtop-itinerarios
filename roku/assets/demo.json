@@ -2,27 +2,127 @@
   "board": {
     "demo": true,
     "imports": [
-      {"plant":"2026-10-07","container":"TTIU1000001","hbl":"HBL-EJEMPLO-001","items":"Plywood"},
-      {"plant":"2026-10-07","container":"TTIU1000002","hbl":"HBL-EJEMPLO-001","items":"Plywood"},
-      {"plant":"2026-10-07","container":"TTIU1000003","hbl":"HBL-EJEMPLO-002","items":"Partes de motores"},
-      {"plant":"2026-10-07","container":"TTIU1000004","hbl":"HBL-EJEMPLO-002","items":"Partes de motores"},
-      {"plant":"2026-10-07","container":"TTIU1000005","hbl":"HBL-EJEMPLO-003","items":"Equipo"},
-      {"plant":"2026-10-07","container":"TTIU1000006","hbl":"HBL-EJEMPLO-003","items":"Equipo"},
-      {"plant":"2026-10-07","container":"TTIU1000007","hbl":"HBL-EJEMPLO-004","items":"Plywood"},
-      {"plant":"2026-10-07","container":"TTIU1000008","hbl":"HBL-EJEMPLO-004","items":"Partes de motores"},
-      {"plant":"2026-10-07","container":"TTIU1000009","hbl":"HBL-EJEMPLO-005","items":"Equipo"},
-      {"plant":"2026-10-07","container":"TTIU1000010","hbl":"HBL-EJEMPLO-005","items":"Plywood"},
-      {"plant":"2026-10-07","container":"TTIU1000011","hbl":"HBL-EJEMPLO-006","items":"Partes de motores"},
-      {"plant":"2026-10-07","container":"TTIU1000012","hbl":"HBL-EJEMPLO-006","items":"Equipo"}
+      {
+        "plant": null,
+        "container": "TTIU1000001",
+        "hbl": "HBL-EJEMPLO-001",
+        "items": "Plywood",
+        "displayDate": "2026-10-07",
+        "dateType": "ETA"
+      },
+      {
+        "plant": null,
+        "container": "TTIU1000002",
+        "hbl": "HBL-EJEMPLO-001",
+        "items": "Plywood",
+        "displayDate": "2026-10-07",
+        "dateType": "ETA"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000003",
+        "hbl": "HBL-EJEMPLO-002",
+        "items": "Partes de motores",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000004",
+        "hbl": "HBL-EJEMPLO-002",
+        "items": "Partes de motores",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000005",
+        "hbl": "HBL-EJEMPLO-003",
+        "items": "Equipo",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000006",
+        "hbl": "HBL-EJEMPLO-003",
+        "items": "Equipo",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000007",
+        "hbl": "HBL-EJEMPLO-004",
+        "items": "Plywood",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000008",
+        "hbl": "HBL-EJEMPLO-004",
+        "items": "Partes de motores",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000009",
+        "hbl": "HBL-EJEMPLO-005",
+        "items": "Equipo",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000010",
+        "hbl": "HBL-EJEMPLO-005",
+        "items": "Plywood",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000011",
+        "hbl": "HBL-EJEMPLO-006",
+        "items": "Partes de motores",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      },
+      {
+        "plant": "2026-10-07",
+        "container": "TTIU1000012",
+        "hbl": "HBL-EJEMPLO-006",
+        "items": "Equipo",
+        "displayDate": "2026-10-07",
+        "dateType": "ATP"
+      }
     ],
     "exports": [
-      {"departure":"2026-10-08","origin":"Atlanta","reservation":"HBL-EJEMPLO-OUT-1","container":"TTIU2000001","transfer":"TRANSFER-EJEMPLO-1"},
-      {"departure":"2026-10-13","origin":"Louisville","reservation":"","container":"","transfer":"TRANSFER-EJEMPLO-2"}
+      {
+        "departure": "2026-10-08",
+        "origin": "Atlanta",
+        "reservation": "HBL-EJEMPLO-OUT-1",
+        "container": "TTIU2000001",
+        "transfer": "TRANSFER-EJEMPLO-1"
+      },
+      {
+        "departure": "2026-10-13",
+        "origin": "Louisville",
+        "reservation": "",
+        "container": "",
+        "transfer": "TRANSFER-EJEMPLO-2"
+      }
     ],
-    "port":{"eta":"2026-10-06","watchCount":2,"unscheduledCount":0},
-    "today":"2026-10-06"
+    "port": {
+      "eta": "2026-10-06",
+      "watchCount": 2,
+      "unscheduledCount": 0
+    },
+    "today": "2026-10-07"
   },
-  "lastSuccessfulRead":"2026-10-06T20:00:00Z",
-  "lastSuccessfulReadLocal":"2026-10-06T14:00-06:00",
-  "error":null
+  "lastSuccessfulRead": "2026-10-07T17:40:00Z",
+  "lastSuccessfulReadLocal": "2026-10-07T11:40-06:00",
+  "error": null
 }

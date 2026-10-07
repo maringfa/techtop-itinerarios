@@ -14,10 +14,12 @@ La lectura real depende de validar encabezados, nombres de hojas, rangos combina
 
 | Fuente | Regla de lectura | Regla para la pantalla |
 | --- | --- | --- |
-| Importaciones | `ETA`, `HBL` y otras celdas compartidas se heredan cuando hay celdas combinadas. `ATP` (llegada a planta) pertenece a cada contenedor. | Mostrar HBL, Container, Items y ATP desde hoy. Excluir `Arrived`, que significa llegada a planta. ETA nunca sustituye ATP; se elimina el cuadro de seguimiento portuario de la vista. |
+| Importaciones | `ETA`, `HBL` y otras celdas compartidas se heredan cuando hay celdas combinadas. `ATP` (llegada a planta) pertenece a cada contenedor. | Mostrar HBL, Container e Items. Usar ATP si existe y rotular «ATP · Llegada a planta»; si está vacío, usar ETA y rotular «ETA · Arribo estimado al puerto». Excluir `Arrived`. La fecha elegida debe ser hoy o futura; no hay cuadro portuario separado. |
 | Exportaciones | Leer `Origin`, `Reservation`, `Container`, `Transfer` y `Deliver at TTICR`. | Mostrar HBL (Reservation), Container, Origin como destino, Transfer y fecha de salida desde hoy. Exigir fecha y Transfer; HBL y contenedor pueden estar pendientes. No mostrar contenido de carga. |
 
 Las fechas de ambas listas se comparan con el día actual de Costa Rica y se ordenan de la más cercana a la más lejana. El servidor filtra la agenda; web y Roku vuelven a descartar fechas pasadas al cambiar de día, incluso al mostrar la última lectura válida.
+
+Al agregar ATP, la tarjeta deja de mostrar ETA y cambia de posición según ATP. Un ATP pasado no habilita volver al ETA: el contenedor se excluye. Sin ninguna de las dos fechas, no aparece. El contrato JSON de importaciones conserva `plant` (ATP o `null`) y agrega `displayDate` (fecha elegida) y `dateType` (`ATP` o `ETA`); no incluye un ETA adicional cuando existe ATP.
 
 El navegador piloto presenta hasta diez importaciones y cinco exportaciones por página, pero genera tantas páginas como hagan falta; no hay límite de contenedores por fecha. Muestra fecha y hora de la última lectura exitosa y conserva la última lectura válida si la siguiente falla.
 
