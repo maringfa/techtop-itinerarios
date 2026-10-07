@@ -15,7 +15,7 @@ from reader import read_xlsx
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = Path(os.environ.get("TECHTOP_BOARD_CONFIG", ROOT / "config.example.json"))
-settings = json.loads(CONFIG.read_text(encoding="utf-8"))
+settings = json.loads(CONFIG.read_text(encoding="utf-8-sig"))
 for source in (settings["imports"], settings["exports"]):
     configured = Path(source["path"])
     source["path"] = str(configured if configured.is_absolute() else CONFIG.parent / configured)

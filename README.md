@@ -8,6 +8,8 @@ El backend ofrece la vista de importaciones y exportaciones a navegadores locale
 
 ## Primera ejecución con datos ficticios
 
+Para la prueba en una laptop Windows, seguir la [guía paso a paso](docs/PRUEBA_LOCAL_WINDOWS.md). La instalación incluye `tzdata` en Windows para usar la fecha de Costa Rica; la configuración admite UTF-8 con o sin BOM.
+
 En una computadora con Python 3.11 o posterior:
 
 ```powershell
