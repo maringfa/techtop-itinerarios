@@ -1,4 +1,4 @@
-# Actualizar a 0.7.0-pilot y trasladar la configuración
+# Actualizar a 0.7.1-pilot y trasladar la configuración
 
 Esta guía parte de una laptop con el tablero ya instalado y una configuración real que funciona. No requiere Visual Studio Code, Git, cambios a los Excel ni reinstalar Python. Las dependencias de esta versión no cambiaron.
 
@@ -15,9 +15,11 @@ Set-Location "$env:USERPROFILE\TechTop\Proyecto"
 Get-Content .\VERSION
 ```
 
-Debe mostrar `0.7.0-pilot`.
+Debe mostrar `0.7.1-pilot`.
 
 ## 2. Adaptar la configuración actual a OneDrive
+
+Para actualizar únicamente el contador de 0.7.1, conservar la configuración que ya funciona y pasar al paso 3. No hace falta repetir la conversión ni modificar los Excel.
 
 Los dos Excel deben estar sincronizados bajo la misma carpeta base y con **Mantener siempre en este dispositivo**. Ejecutar desde `Proyecto`:
 
@@ -66,6 +68,7 @@ Abrir `http://127.0.0.1:8765/`. Si la pestaña ya estaba abierta, recargar con `
 
 - Etiqueta **ITINERARIO INTERNO** y hora/fecha de última lectura exitosa.
 - Importaciones: solo las veinte más próximas entre hoy y hoy + 30 días; diez por página, máximo dos. Si hay menos de once, solo una.
+- Contador «Primeros X de Y pendientes · página N/P»: X es la selección visible total (hasta veinte), Y todos los futuros elegibles, incluso fuera de treinta días. Si solo hay diecinueve seleccionados, debe indicar diecinueve; no rellena con fechas lejanas.
 - ATP reemplaza ETA cuando existe; Arrived y fechas pasadas salen de la vista. En empates por fecha se ordena por Container.
 - Un grupo de veinte o más en un día no genera páginas adicionales. Los restantes siguen en Excel y entran cuando les corresponda dentro del límite.
 - Exportaciones mantiene el funcionamiento anterior. Revisar las páginas que necesite.

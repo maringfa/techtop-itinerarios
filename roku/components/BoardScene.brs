@@ -3,6 +3,11 @@ sub init()
     m.rows = m.top.FindNode("rows")
     m.updated = m.top.FindNode("updated")
     m.notice = m.top.FindNode("notice")
+    m.importsTitle = m.top.FindNode("importsTitle")
+    titleFont = CreateObject("roSGNode", "Font")
+    titleFont.uri = "font:MediumSystemFont"
+    titleFont.size = 30
+    m.importsTitle.font = titleFont
     m.refreshTimer = m.top.FindNode("refreshTimer")
     m.pageTimer = m.top.FindNode("pageTimer")
     m.refreshTimer.ObserveField("fire", "fetchBoard")
@@ -139,6 +144,28 @@ function pageCount(items as Object, size as Integer) as Integer
     return Int((items.Count() + size - 1) / size)
 end function
 
+function pendingImportCount(today as String, shown as Integer) as Integer
+    total = 0
+    byDate = m.board.importsPendingByDate
+    if type(byDate) = "roAssociativeArray" then
+        for each day in byDate
+            if day >= today then
+                count = Int(Val(safeText(byDate[day])))
+                if count > 0 then total = total + count
+            end if
+        end for
+    else
+        ' Compatibilidad con el demo o servidores anteriores, sin totales por fecha.
+        for each item in m.board.imports
+            day = safeText(item.displayDate)
+            if day = "" then day = safeText(item.plant)
+            if day <> "" and day >= today then total = total + 1
+        end for
+    end if
+    if total < shown then return shown
+    return total
+end function
+
 function lastIndex(count as Integer, index as Integer) as Integer
     if count - 1 < index then return count - 1
     return index
@@ -156,7 +183,8 @@ sub drawBoard()
     outPages = pageCount(exports, 5)
     inPage = m.page mod inPages
     outPage = m.page mod outPages
-    m.top.FindNode("importsTitle").text = "IMPORTACIONES · " + imports.Count().ToStr() + " PRÓXIMAS · " + (inPage + 1).ToStr() + "/" + inPages.ToStr()
+    pendingTotal = pendingImportCount(today, imports.Count())
+    m.importsTitle.text = "IMPORTACIONES · Primeros " + imports.Count().ToStr() + " de " + pendingTotal.ToStr() + " pendientes · página " + (inPage + 1).ToStr() + "/" + inPages.ToStr()
     m.top.FindNode("exportsTitle").text = "EXPORTACIONES · " + exports.Count().ToStr() + " PRÓXIMAS · " + (outPage + 1).ToStr() + "/" + outPages.ToStr()
     for i = inPage * 10 to lastIndex(imports.Count(), inPage * 10 + 9)
         item = imports[i]

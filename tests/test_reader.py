@@ -15,6 +15,36 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ItineraryTests(unittest.TestCase):
+    def test_pending_total_includes_distant_dates_without_filling_visible_window(self):
+        now = datetime(2026, 10, 8, 12, tzinfo=ZoneInfo("America/Costa_Rica"))
+        today = now.date()
+        def imp(container, eta, plant=None, status="In transit"):
+            return {"container": container, "eta": eta, "plant": plant, "status": status,
+                    "hbl": "FICTICIO", "items": "Plywood"}
+        for near in (20, 19, 0):
+            with self.subTest(shown=near):
+                imports = [imp(f"NEAR-{i:02}", today + timedelta(days=1)) for i in range(near)]
+                imports += [imp(f"FAR-{i:02}", today - timedelta(days=1), today + timedelta(days=60))
+                            for i in range(40 - near)]
+                imports += [imp("PAST", today - timedelta(days=1)), imp("NO-DATE", None),
+                            imp("ARRIVED", today, status="Arrived"),
+                            imp("PAST-ATP", today, today - timedelta(days=1))]
+                board = build_board(imports, [], now=now)
+                self.assertEqual(len(board["imports"]), near)
+                self.assertEqual(sum(board["importsPendingByDate"].values()), 40)
+                expected = {(today + timedelta(days=60)).isoformat(): 40 - near}
+                if near:
+                    expected[(today + timedelta(days=1)).isoformat()] = near
+                self.assertEqual(board["importsPendingByDate"], expected)
+                if near:
+                    imports[0]["status"] = "Arrived"
+                    updated = build_board(imports, [], now=now)
+                    self.assertEqual(sum(updated["importsPendingByDate"].values()), 39)
+                    self.assertEqual(len(updated["imports"]), near - 1)
+                advanced = build_board(imports, [], now=now + timedelta(days=2))
+                self.assertEqual(sum(advanced["importsPendingByDate"].values()), 40 - near)
+                self.assertEqual(advanced["imports"], [])
+
     def test_import_window_caps_tied_dates_and_refills_after_arrival_or_atp_change(self):
         now = datetime(2026, 10, 8, 12, tzinfo=ZoneInfo("America/Costa_Rica"))
         today = now.date()

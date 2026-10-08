@@ -55,6 +55,14 @@
     for (let i = 0; i < items.length; i += 10) pages.push(items.slice(i, i + 10));
     return pages.length ? pages : [[]];
   }
+  function pendingImportCount(today, shown) {
+    const byDate = board.importsPendingByDate;
+    const total = byDate && typeof byDate === "object" && !Array.isArray(byDate)
+      ? Object.entries(byDate).reduce((sum, [day, count]) => sum +
+          (day >= today && Number.isInteger(count) && count > 0 ? count : 0), 0)
+      : board.imports.filter(x => (x.displayDate || x.plant) >= today).length;
+    return Math.max(shown, total);
+  }
   function render() {
     const alert = $("readError");
     alert.hidden = !error;
@@ -92,7 +100,9 @@
     });
     if (!upcomingImports.length) $("importRows").append(node("div", "empty", "Sin importaciones próximas con ATP o ETA"));
     if (!upcomingExports.length) $("exportRows").append(node("div", "empty", "Sin salidas con fecha y Transfer"));
-    $("importCount").textContent = upcomingImports.length + (upcomingImports.length === 1 ? " próxima" : " próximas") + (imports.length > 1 ? " · página " + (page % imports.length + 1) + "/" + imports.length : "");
+    $("importCount").textContent = "Primeros " + upcomingImports.length + " de " +
+      pendingImportCount(board.today, upcomingImports.length) + " pendientes · página " +
+      (page % imports.length + 1) + "/" + imports.length;
     $("exportCount").textContent = upcomingExports.length + (upcomingExports.length === 1 ? " próxima" : " próximas") + (exports.length > 1 ? " · página " + (page % exports.length + 1) + "/" + exports.length : "");
   }
   async function refresh() {

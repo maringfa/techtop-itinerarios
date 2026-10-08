@@ -1,4 +1,5 @@
 """Reglas de exhibición; no accede a los archivos de origen."""
+from collections import Counter
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -17,9 +18,10 @@ def build_board(imports, exports, demo=False, now=None):
     now = now or datetime.now(CR)
     today = now.date()
     window_end = today + timedelta(days=IMPORT_HORIZON_DAYS)
+    future_imports = [x for x in imports if import_date(x) and import_date(x) >= today
+                      and x["status"].strip().casefold() != "arrived"]
     arrivals = sorted(
-        (x for x in imports if import_date(x) and today <= import_date(x) <= window_end
-         and x["status"].strip().casefold() != "arrived"),
+        (x for x in future_imports if import_date(x) <= window_end),
         key=lambda x: (import_date(x), x["container"]),
     )[:IMPORT_LIMIT]
     departures = sorted(
@@ -34,6 +36,8 @@ def build_board(imports, exports, demo=False, now=None):
     )
     return {
         "demo": demo,
+        # Totales por fecha permiten descartar días pasados también al conservar una lectura anterior.
+        "importsPendingByDate": dict(sorted(Counter(import_date(x).isoformat() for x in future_imports).items())),
         "imports": [{"plant": x["plant"].isoformat() if x["plant"] else None,
                      "displayDate": import_date(x).isoformat(),
                      "dateType": "ATP" if x["plant"] else "ETA", "container": x["container"],
