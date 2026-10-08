@@ -1,9 +1,11 @@
 """Reglas de exhibición; no accede a los archivos de origen."""
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 
 CR = ZoneInfo("America/Costa_Rica")
+IMPORT_LIMIT = 20
+IMPORT_HORIZON_DAYS = 30
 
 
 def import_date(record):
@@ -14,11 +16,12 @@ def import_date(record):
 def build_board(imports, exports, demo=False, now=None):
     now = now or datetime.now(CR)
     today = now.date()
+    window_end = today + timedelta(days=IMPORT_HORIZON_DAYS)
     arrivals = sorted(
-        (x for x in imports if import_date(x) and import_date(x) >= today
+        (x for x in imports if import_date(x) and today <= import_date(x) <= window_end
          and x["status"].strip().casefold() != "arrived"),
         key=lambda x: (import_date(x), x["container"]),
-    )
+    )[:IMPORT_LIMIT]
     departures = sorted(
         (x for x in exports if x["departure"] and x["departure"] >= today and x["transfer"].strip()),
         key=lambda x: (x["departure"], x["transfer"]),

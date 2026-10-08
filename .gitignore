@@ -10,6 +10,8 @@ __pycache__/
 # Configuración, credenciales y copias de trabajo
 config.local.json
 config.*.local.json
+config.local.json.*
+config.*.local.json.*
 .env
 .env.*
 *.pem

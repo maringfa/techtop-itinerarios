@@ -104,6 +104,14 @@ Para obtener cada ruta, usar **Copiar como ruta** en el Explorador. Quitar las c
 
 ## 7. Ejecutar con los Excel reales
 
+Si los dos archivos están bajo una misma carpeta OneDrive empresarial y se desea trasladar la configuración a otro usuario, ejecutar primero:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\configurar_onedrive.py --config "$env:USERPROFILE\TechTop\Configuracion\config.local.json"
+```
+
+Lee los dos Excel y convierte las rutas a internas, conservando el primer respaldo `.bak`. La próxima ejecución detecta OneDrive automáticamente. No modifica los Excel. Si informa que no puede detectar la raíz, las rutas actuales permanecen intactas; seguir la sección de detección de [actualización Windows](ACTUALIZAR_WINDOWS.md). Este paso es opcional para una prueba en el mismo equipo con rutas absolutas.
+
 ```powershell
 Set-Location "$env:USERPROFILE\TechTop\Proyecto"
 $env:TECHTOP_BOARD_CONFIG = "$env:USERPROFILE\TechTop\Configuracion\config.local.json"
@@ -118,7 +126,7 @@ Abrir `http://127.0.0.1:8765/`. La etiqueta debe decir **ITINERARIO INTERNO**. T
 - Sin ATP: mostrar **ETA · Arribo estimado al puerto**. Con ATP: mostrar **ATP · Llegada a planta** y usar ATP para filtrar y ordenar.
 - Excluir fechas elegidas anteriores a hoy y contenedores con Status Arrived; sin ATP ni ETA, no aparece la importación.
 - Exigir fecha Deliver at TTICR y Transfer para exportaciones; reserva y contenedor pueden estar pendientes.
-- Revisar todas las páginas cuando haya más de diez importaciones o cinco exportaciones. Rotan cada 16 segundos.
+- Importaciones considera hoy a hoy + 30 días inclusive y muestra los veinte más cercanos, con máximo de dos páginas de diez. Al pasar fechas, marcar Arrived o actualizar ATP se recalcula la selección. Revisar ambas páginas; rotan cada 16 segundos. Exportaciones conserva cinco por página, sin el nuevo horizonte ni límite total.
 - Comprobar la fecha y hora de la última lectura y un cambio guardado legítimo. La lectura ocurre cada 60 segundos y la pantalla consulta el resultado cada 30; dejar hasta 90 segundos después de que el cambio esté disponible localmente.
 
 Para simular cambios, configurar dos copias locales de prueba guardadas dentro de la empresa. Los itinerarios reales y `config.local.json` permanecen fuera de GitHub.
@@ -142,6 +150,8 @@ Detener con `Ctrl+C` en PowerShell. Para volver a ejecutar, repetir los tres com
 | Sigue diciendo datos ficticios | Confirmar `demo: false` y la variable TECHTOP_BOARD_CONFIG del paso 7. |
 | No aparecen tarjetas | Revisar que haya registros con fechas elegidas desde hoy y estados/Transfer elegibles; puede ser una agenda correctamente vacía. |
 | Cambio guardado no aparece | Confirmar que OneDrive lo sincronizó localmente y esperar el ciclo de lectura/pantalla. |
+| No se encontró un OneDrive empresarial | Comprobar la cuenta que ejecuta el programa, archivos locales y rutas internas; IT puede indicar TECHTOP_ONEDRIVE_ROOT. |
+| Hay más de un OneDrive válido | Elegir explícitamente la carpeta base con TECHTOP_ONEDRIVE_ROOT; el programa no adivina la cuenta. |
 
 Si se pide ayuda, compartir el mensaje de error sin valores del itinerario, rutas privadas ni capturas con datos reales. Esta prueba no habilita acceso desde los televisores; la publicación protegida y la prueba Roku se realizan después con IT.
 

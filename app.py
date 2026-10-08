@@ -10,15 +10,18 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from domain import build_board
+from paths import ConfigError, load_settings
 from reader import read_xlsx
 
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = Path(os.environ.get("TECHTOP_BOARD_CONFIG", ROOT / "config.example.json"))
-settings = json.loads(CONFIG.read_text(encoding="utf-8-sig"))
-for source in (settings["imports"], settings["exports"]):
-    configured = Path(source["path"])
-    source["path"] = str(configured if configured.is_absolute() else CONFIG.parent / configured)
+try:
+    settings = load_settings(CONFIG)
+except ConfigError as exc:
+    raise SystemExit(str(exc)) from None
+except (OSError, ValueError):
+    raise SystemExit("No se pudieron resolver las rutas locales. Revisar configuración y permisos con IT.") from None
 state_lock = threading.Lock()
 state = {"board": None, "lastSuccessfulRead": None, "lastSuccessfulReadLocal": None, "lastAttempt": None,
          "error": "Esperando primera lectura"}

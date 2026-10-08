@@ -50,6 +50,11 @@
     if (current.length) pages.push(current);
     return pages.length ? pages : [[]];
   }
+  function importPages(items) {
+    const pages = [];
+    for (let i = 0; i < items.length; i += 10) pages.push(items.slice(i, i + 10));
+    return pages.length ? pages : [[]];
+  }
   function render() {
     const alert = $("readError");
     alert.hidden = !error;
@@ -57,13 +62,16 @@
     if (!board) return;
     const calendar = Object.fromEntries(calendarFmt.formatToParts(new Date()).map(x => [x.type, x.value]));
     board.today = calendar.year + "-" + calendar.month + "-" + calendar.day;
+    const horizon = date(board.today);
+    horizon.setUTCDate(horizon.getUTCDate() + 30);
+    const windowEnd = horizon.toISOString().slice(0, 10);
     const upcomingImports = board.imports.map(x => ({...x, displayDate: x.displayDate || x.plant}))
-      .filter(x => x.displayDate >= board.today);
+      .filter(x => x.displayDate >= board.today && x.displayDate <= windowEnd).slice(0, 20);
     const upcomingExports = board.exports.filter(x => x.departure >= board.today);
     $("headerDate").textContent = strip(dayFmt.format(date(board.today)));
     $("modeBadge").textContent = board.demo ? "PILOTO · DATOS FICTICIOS" : "ITINERARIO INTERNO";
     $("lastUpdated").textContent = "Última actualización: " + (lastSuccessfulRead ? strip(stampFmt.format(new Date(lastSuccessfulRead))) : "pendiente");
-    const imports = pagesByDate(upcomingImports, "displayDate", 10);
+    const imports = importPages(upcomingImports);
     const exports = pagesByDate(upcomingExports, "departure", 5);
     const inPage = imports[page % imports.length], outPage = exports[page % exports.length];
     $("screen").className = inPage.length >= 6 ? "screen high-volume" : "screen";

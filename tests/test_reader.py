@@ -15,6 +15,33 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ItineraryTests(unittest.TestCase):
+    def test_import_window_caps_tied_dates_and_refills_after_arrival_or_atp_change(self):
+        now = datetime(2026, 10, 8, 12, tzinfo=ZoneInfo("America/Costa_Rica"))
+        today = now.date()
+        def imp(container, days, plant=None, status="In transit"):
+            return {"container": container, "plant": plant, "eta": today + timedelta(days=days),
+                    "status": status, "hbl": "FICTICIO", "items": "Plywood"}
+        imports = [imp("OCT-00", 0)] + [imp(f"NOV-{i:02}", 30) for i in range(25)]
+        imports += [imp("DICIEMBRE", 60), imp("FUERA", 31), imp("PASADO", -1),
+                    imp("ARRIVED", 1, status="Arrived")]
+        exp = {"departure": today + timedelta(days=60), "transfer": "FICTICIO", "origin": "Atlanta",
+               "reservation": "", "container": ""}
+        board = build_board(list(reversed(imports)), [exp], now=now)
+        self.assertEqual(len(board["imports"]), 20)
+        self.assertEqual([x["container"] for x in board["imports"]],
+                         ["OCT-00"] + [f"NOV-{i:02}" for i in range(19)])
+        self.assertEqual(len(board["exports"]), 1)  # Exportaciones no tiene el nuevo horizonte.
+        next_day = build_board(imports, [], now=now + timedelta(days=1))
+        self.assertEqual([x["container"] for x in next_day["imports"]], [f"NOV-{i:02}" for i in range(20)])
+        imports[0]["status"] = "Arrived"
+        same_day = build_board(imports, [], now=now)
+        self.assertEqual(same_day["imports"][0]["container"], "NOV-00")
+        imports[25]["plant"] = today + timedelta(days=2)  # Un ATP cercano desplaza un ETA lejano.
+        reprioritized = build_board(imports, [], now=now)
+        self.assertEqual(reprioritized["imports"][0]["container"], "NOV-24")
+        imports[25]["plant"] = today + timedelta(days=45)  # No volver a su ETA dentro del horizonte.
+        self.assertNotIn("NOV-24", [x["container"] for x in build_board(imports, [], now=now)["imports"]])
+
     def test_monthly_exports_include_future_months_and_new_tabs(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "monthly.xlsx"

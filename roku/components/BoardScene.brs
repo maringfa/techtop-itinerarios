@@ -111,12 +111,25 @@ function currentPlantDay() as String
     return Left(clock.ToISOString(), 10)
 end function
 
+function importWindowEnd() as String
+    clock = CreateObject("roDateTime")
+    clock.FromSeconds(clock.AsSeconds() - 21600 + 30 * 86400)
+    return Left(clock.ToISOString(), 10)
+end function
+
 function upcoming(items as Object, dateKey as String, today as String) as Object
     result = []
+    windowEnd = importWindowEnd()
     for each item in items
         day = safeText(item[dateKey])
         if dateKey = "displayDate" and day = "" then day = safeText(item.plant)
-        if day <> "" and day >= today then result.Push(item)
+        if day <> "" and day >= today then
+            if dateKey <> "displayDate" then
+                result.Push(item)
+            else if day <= windowEnd and result.Count() < 20 then
+                result.Push(item)
+            end if
+        end if
     end for
     return result
 end function
